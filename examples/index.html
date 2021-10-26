@@ -1,0 +1,75 @@
+<html>
+
+<head>
+    <script src="../dist/index.js"></script>
+    <style>
+        #container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #video {
+            width: 640;
+            height: 480;
+            border: 1px solid gray;
+        }
+        #container div {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+        <div>
+            <video id="video"></video>
+        </div>
+        <div>
+            <button id="start" disabled>start recording</button>
+            <button id="stop" disabled>stop recording</button>
+        </div>
+        <div>
+            <p>Video link: <span id="video-link"><i>will be displayed when the recording is finished</i></span></p>
+        </div>
+    </div>
+    
+    <script> 
+        const video = document.querySelector('#video');
+        const startButton = document.getElementById("start");
+        const stopButton = document.getElementById("stop");
+        const videoLink = document.getElementById("video-link");
+        let stream, recorder;
+
+        var constraints = window.constraints = {
+            audio: true,
+            video: true
+        };
+
+        navigator.mediaDevices.getUserMedia(constraints).then((s) => {
+            stream = s;
+            video.srcObject = s;
+            video.play();
+            startButton.disabled = false;
+        });
+
+        document.getElementById("start").addEventListener("click", () => {
+            recorder = new ApiVideoMediaRecorder(stream, {
+                uploadToken: "UPLOAD_TOKEN"
+            });
+            
+            recorder.start();
+            
+            startButton.disabled = true;
+            stopButton.disabled = false;
+        });
+
+        document.getElementById("stop").addEventListener("click", () => {
+            startButton.disabled = false;
+            stopButton.disabled = true;
+
+            recorder.stop().then(v => videoLink.innerHTML = v.assets.player);
+        });
+    </script>
+</body>
+
+</html>
