@@ -1,23 +1,44 @@
-[![badge](https://img.shields.io/twitter/follow/api_video?style=social)](https://twitter.com/intent/follow?screen_name=api_video)
-
-[![badge](https://img.shields.io/github/stars/apivideo/api.video-typescript-media-recorder?style=social)](https://github.com/apivideo/api.video-typescript-media-recorder)
-
-[![badge](https://img.shields.io/discourse/topics?server=https%3A%2F%2Fcommunity.api.video)](https://community.api.video)
-
+[![badge](https://img.shields.io/twitter/follow/api_video?style=social)](https://twitter.com/intent/follow?screen_name=api_video) &nbsp; [![badge](https://img.shields.io/github/stars/apivideo/api.video-typescript-media-recorder?style=social)](https://github.com/apivideo/api.video-typescript-media-recorder) &nbsp; [![badge](https://img.shields.io/discourse/topics?server=https%3A%2F%2Fcommunity.api.video)](https://community.api.video)
 ![](https://github.com/apivideo/API_OAS_file/blob/master/apivideo_banner.png)
+<h1 align="center">api.video media recorder</h1>
 
-[api.video](https://api.video) is an API that encodes on the go to facilitate immediate playback, enhancing viewer streaming experiences across multiple devices and platforms. You can stream live or on-demand online videos within minutes.
-
-
-# api.video typescript media recorder
 ![npm](https://img.shields.io/npm/v/@api.video/media-recorder) ![ts](https://badgen.net/badge/-/TypeScript/blue?icon=typescript&label)
+
+
+[api.video](https://api.video) is the video infrastructure for product builders. Lightning fast video APIs for integrating, scaling, and managing on-demand & low latency live streaming features in your app.
+
+
+# Table of contents
+- [Table of contents](#table-of-contents)
+- [Project description](#project-description)
+- [Getting started](#getting-started)
+  - [Installation](#installation)
+    - [Installation method #1: requirejs](#installation-method-1-requirejs)
+    - [Installation method #2: typescript](#installation-method-2-typescript)
+    - [Simple include in a javascript project](#simple-include-in-a-javascript-project)
+- [Documentation](#documentation)
+  - [Instanciation](#instanciation)
+    - [Options](#options)
+      - [Using a delegated upload token (recommended):](#using-a-delegated-upload-token-recommended)
+      - [Using an access token (discouraged):](#using-an-access-token-discouraged)
+      - [Common options](#common-options)
+    - [Example](#example)
+  - [Methods](#methods)
+    - [`start()`](#start)
+    - [`stop()`](#stop)
+- [Full example](#full-example)
+
+# Project description
+
 
 Typescript library to easily upload data from a [MediaStream](https://developer.mozilla.org/fr/docs/Web/API/MediaStream) to api.video.
 It can be used to upload a video to api.video from the user's webcam with ease, as well as from a screen recording.
 
-# Installation
+# Getting started
 
-## Installation method #1: requirejs
+## Installation
+
+### Installation method #1: requirejs
 
 If you use requirejs you can add the library as a dependency to your project with 
 
@@ -36,7 +57,7 @@ var recorder = new ApiVideoMediaRecorder(mediaStream, {
 }); 
 ```
 
-## Installation method #2: typescript
+### Installation method #2: typescript
 
 If you use Typescript you can add the library as a dependency to your project with 
 
@@ -56,7 +77,7 @@ const recorder = new ApiVideoMediaRecorder(mediaStream, {file: files[0],
 ```
 
 
-## Simple include in a javascript project
+### Simple include in a javascript project
 
 Include the library in your HTML file like so:
 
@@ -80,15 +101,15 @@ Then, once the `window.onload` event has been trigered, create your player using
 </script>
 ```
 
+# Documentation
 
+## Instanciation
 
-# Instanciation
-
-## Options 
+### Options 
 
 The media recorder object is instanciated using a [MediaStream](https://developer.mozilla.org/fr/docs/Web/API/MediaStream) and an `options` object. Options to provide depend on the way you want to authenticate to the API: either using a delegated upload token (recommanded), or using a usual access token. 
 
-### Using a delegated upload token (recommended):
+#### Using a delegated upload token (recommended):
 
 Using delegated upload tokens for authentication is best options when uploading from the client side. To know more about delegated upload token, read the dedicated article on api.video's blog: [Delegated Uploads](https://api.video/blog/tutorials/delegated-uploads).
 
@@ -99,7 +120,7 @@ Using delegated upload tokens for authentication is best options when uploading 
 |                       videoId | no        | string | id of an existing video |
 | _common options (see bellow)_ |           |        |                         |
 
-### Using an access token (discouraged):
+#### Using an access token (discouraged):
 
 **Warning**: be aware that exposing your access token client-side can lead to huge security issues. Use this method only if you know what you're doing :).
 
@@ -111,7 +132,7 @@ Using delegated upload tokens for authentication is best options when uploading 
 | _common options (see bellow)_ |           |        |                         |
 
 
-### Common options
+#### Common options
 
 
 | Option name | Mandatory | Type   | Description                                                                |
@@ -120,7 +141,7 @@ Using delegated upload tokens for authentication is best options when uploading 
 |     retries | no        | number | number of retries when an API call fails (default: 5)                      |
 
 
-## Example
+### Example
 
 ```javascript
     const mediaRecorder = new ApiVideoMediaRecorder(myMediaStream, {
@@ -129,13 +150,13 @@ Using delegated upload tokens for authentication is best options when uploading 
     });
 ```
 
-# Methods
+## Methods
 
-## `start()`
+### `start()`
 
 The start() method starts the upload of the content retrieved from the MediaStream. It takes no parameter.
 
-### Example
+**Example**
 
 ```javascript
     // ... mediaRecorder instanciation
@@ -143,11 +164,11 @@ The start() method starts the upload of the content retrieved from the MediaStre
     mediaRecorder.start();
 ```
 
-## `stop()`
+### `stop()`
 
 The start() method stops the media recording. It upload the last part of content retrieved from the MediaStream (this will start the aggregation of the video parts on the api.video side). It takes no parameter. It returns a Promise that resolves with the newly created video.
 
-### Example
+**Example**
 
 ```javascript
     // ... mediaRecorder instanciation
