@@ -1,0 +1,106 @@
+<html>
+
+<head>
+    <script src="https://unpkg.com/video-stream-merger/dist/video-stream-merger.js" defer></script>
+    <script src="https://unpkg.com/@api.video/media-recorder" defer></script>
+    <style>
+        #container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #video {
+            width: 640;
+            height: 480;
+            border: 1px solid gray;
+        }
+
+        #container div {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+        <div>
+            <video id="video"></video>
+        </div>
+        <div>
+            <button id="start" disabled>start recording</button>
+            <button id="stop" disabled>stop recording</button>
+        </div>
+        <div>
+            <p>Video link: <span id="video-link"><i>will be displayed when the recording is finished</i></span></p>
+        </div>
+    </div>
+
+    <script>
+        const video = document.querySelector('#video');
+        const startButton = document.getElementById("start");
+        const stopButton = document.getElementById("stop");
+        const videoLink = document.getElementById("video-link");
+        let stream, recorder;
+
+        // get the webcam stream
+        navigator.mediaDevices.getUserMedia({ audio: true, video: true }).then((webcamStream) => {
+
+            // get the screen stream
+            navigator.mediaDevices.getDisplayMedia({ audio: false, video: true }).then((screenStream) => {
+                
+                const screenStreamSettings = screenStream.getTracks()[0].getSettings();
+
+                var merger = new VideoStreamMerger({
+                    width: screenStreamSettings.width,
+                    height: screenStreamSettings.height
+                })
+
+                // Add the screen capture. Position it to fill the whole stream (the default)
+                merger.addStream(screenStream, {
+                    x: 0, // position of the topleft corner
+                    y: 0,
+                    width: merger.width,
+                    height: merger.height,
+                    mute: true // we don't want sound from the screen (if there is any)
+                })
+
+                // Add the webcam stream. Position it on the bottom left and resize it to 100x100.
+                merger.addStream(webcamStream, {
+                    x: 0,
+                    y: merger.height - 100,
+                    width: 100,
+                    height: 100,
+                    mute: false
+                });
+
+                merger.start();
+                stream = merger.result;
+                video.srcObject = stream;
+                video.play();
+                startButton.disabled = false;
+            });
+            
+        });
+
+        document.getElementById("start").addEventListener("click", () => {
+            recorder = new ApiVideoMediaRecorder(stream, {
+                uploadToken: "[DELEGATED_UPLOAD_TOKEN]"
+            });
+
+            recorder.start();
+
+            startButton.disabled = true;
+            stopButton.disabled = false;
+        });
+
+        document.getElementById("stop").addEventListener("click", () => {
+            startButton.disabled = false;
+            stopButton.disabled = true;
+
+            recorder.stop().then(v => videoLink.innerHTML = v.assets.player);
+        });
+    </script>
+</body>
+
+</html>
