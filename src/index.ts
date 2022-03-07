@@ -36,8 +36,8 @@ export class ApiVideoMediaRecorder {
         }
     }
 
-    public start() {
-        this.mediaRecorder.start(5000);
+    public start(options?: { timeslice?: number }) {
+        this.mediaRecorder.start(options?.timeslice || 5000);
     }
 
     public stop() {

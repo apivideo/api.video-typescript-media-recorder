@@ -8,7 +8,9 @@ export declare class ApiVideoMediaRecorder {
     private onVideoAvailable?;
     constructor(mediaStream: MediaStream, options: ProgressiveUploaderOptionsWithUploadToken | ProgressiveUploaderOptionsWithAccessToken);
     private onDataAvailable;
-    start(): void;
+    start(options?: {
+        timeslice?: number;
+    }): void;
     stop(): Promise<unknown>;
     pause(): void;
     private getSupportedMimeTypes;

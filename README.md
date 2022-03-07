@@ -24,7 +24,8 @@
       - [Common options](#common-options)
     - [Example](#example)
   - [Methods](#methods)
-    - [`start()`](#start)
+    - [`start(options?: { timeslice?: number })`](#startoptions--timeslice-number-)
+      - [Options](#options-1)
     - [`stop()`](#stop)
 - [Full example](#full-example)
 
@@ -135,10 +136,10 @@ Using delegated upload tokens for authentication is best options when uploading 
 #### Common options
 
 
-| Option name | Mandatory | Type   | Description                                                                |
-| ----------: | --------- | ------ | -------------------------------------------------------------------------- |
-|     apiHost | no        | string | api.video host (default: ws.api.video)                                     |
-|     retries | no        | number | number of retries when an API call fails (default: 5)                      |
+| Option name | Mandatory | Type   | Description                                           |
+| ----------: | --------- | ------ | ----------------------------------------------------- |
+|     apiHost | no        | string | api.video host (default: ws.api.video)                |
+|     retries | no        | number | number of retries when an API call fails (default: 5) |
 
 
 ### Example
@@ -152,9 +153,15 @@ Using delegated upload tokens for authentication is best options when uploading 
 
 ## Methods
 
-### `start()`
+### `start(options?: { timeslice?: number })`
 
-The start() method starts the upload of the content retrieved from the MediaStream. It takes no parameter.
+The start() method starts the upload of the content retrieved from the MediaStream. It takes an optionnal `options` parameter.
+
+#### Options
+| Option name | Mandatory          | Type   | Description                                          |
+| ----------: | ------------------ | ------ | ---------------------------------------------------- |
+|   timeslice | no (default: 5000) | number | The number of milliseconds to record into each Blob. |
+
 
 **Example**
 
@@ -162,6 +169,8 @@ The start() method starts the upload of the content retrieved from the MediaStre
     // ... mediaRecorder instanciation
 
     mediaRecorder.start();
+    // or, with a 2 seconds timeslice:
+    // mediaRecorder.start({ timeslice: 2000 });
 ```
 
 ### `stop()`
