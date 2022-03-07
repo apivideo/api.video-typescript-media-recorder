@@ -1,6 +1,9 @@
 # Changelog
 All changes to this project will be documented in this file.
 
+## [1.0.2] - 2022-03-07
+- Make the start() timeslice parameter customizable
+
 ## [1.0.1] - 2021-11-25
 - Bump dependancies
   
