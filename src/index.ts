@@ -1,4 +1,4 @@
-import { ProgressiveUploader, ProgressiveUploaderOptionsWithUploadToken, ProgressiveUploaderOptionsWithAccessToken } from "@api.video/video-uploader";
+import { ProgressiveUploader, ProgressiveUploaderOptionsWithUploadToken, ProgressiveUploaderOptionsWithAccessToken, VideoUploadResponse } from "@api.video/video-uploader";
 
 export interface Options {
     title?: string;
@@ -7,7 +7,7 @@ export interface Options {
 export class ApiVideoMediaRecorder {
     private mediaRecorder: MediaRecorder;
     private streamUpload: ProgressiveUploader;
-    private onVideoAvailable?: (video: any) => void;
+    private onVideoAvailable?: (video: VideoUploadResponse) => void;
 
     constructor(mediaStream: MediaStream, options: ProgressiveUploaderOptionsWithUploadToken | ProgressiveUploaderOptionsWithAccessToken) {
         const supportedTypes = this.getSupportedMimeTypes();
@@ -40,7 +40,7 @@ export class ApiVideoMediaRecorder {
         this.mediaRecorder.start(options?.timeslice || 5000);
     }
 
-    public stop() {
+    public stop(): Promise<VideoUploadResponse> {
         this.mediaRecorder.stop();
         return new Promise((resolve, reject) => {
             this.onVideoAvailable = (v) => resolve(v)
