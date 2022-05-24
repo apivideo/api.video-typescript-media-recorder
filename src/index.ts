@@ -1,5 +1,7 @@
 import { ProgressiveUploader, ProgressiveUploaderOptionsWithUploadToken, ProgressiveUploaderOptionsWithAccessToken, VideoUploadResponse } from "@api.video/video-uploader";
 
+export { ProgressiveUploaderOptionsWithAccessToken, ProgressiveUploaderOptionsWithUploadToken } from "@api.video/video-uploader";
+
 export interface Options {
     title?: string;
 };
@@ -18,7 +20,10 @@ export class ApiVideoMediaRecorder {
             mimeType: supportedTypes[0],
         });
 
-        this.streamUpload = new ProgressiveUploader(options);
+        this.streamUpload = new ProgressiveUploader({
+            preventEmptyParts: true,
+            ...options
+        });
 
         this.mediaRecorder.ondataavailable = (e) => this.onDataAvailable(e);
     }
