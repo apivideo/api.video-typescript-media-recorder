@@ -26,7 +26,8 @@
   - [Methods](#methods)
     - [`start(options?: { timeslice?: number })`](#startoptions--timeslice-number-)
       - [Options](#options-1)
-    - [`stop()`](#stop)
+    - [`stop(): Promise<VideoUploadResponse>`](#stop-promisevideouploadresponse)
+    - [`getMediaRecorderState(): RecordingState`](#getmediarecorderstate-recordingstate)
 - [Full example](#full-example)
 
 # Project description
@@ -173,9 +174,13 @@ The start() method starts the upload of the content retrieved from the MediaStre
     // mediaRecorder.start({ timeslice: 2000 });
 ```
 
-### `stop()`
+### `stop(): Promise<VideoUploadResponse>`
 
 The start() method stops the media recording. It upload the last part of content retrieved from the MediaStream (this will start the aggregation of the video parts on the api.video side). It takes no parameter. It returns a Promise that resolves with the newly created video.
+
+### `getMediaRecorderState(): RecordingState`
+
+Return the state of the underlaying [MediaRecorder](https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder).
 
 **Example**
 

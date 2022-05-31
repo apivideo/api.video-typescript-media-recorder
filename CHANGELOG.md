@@ -1,6 +1,10 @@
 # Changelog
 All changes to this project will be documented in this file.
 
+## [1.0.5] - 2022-05-31
+- Add `getMediaRecorderState()` method
+- Fix `stop()` method when the recorder is not started
+
 ## [1.0.4] - 2022-05-24
 - Prevent last uploaded part to be empty
 

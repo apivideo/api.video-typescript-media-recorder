@@ -1,6 +1,6 @@
 import { ProgressiveUploader, ProgressiveUploaderOptionsWithUploadToken, ProgressiveUploaderOptionsWithAccessToken, VideoUploadResponse } from "@api.video/video-uploader";
 
-export { ProgressiveUploaderOptionsWithAccessToken, ProgressiveUploaderOptionsWithUploadToken } from "@api.video/video-uploader";
+export { ProgressiveUploaderOptionsWithAccessToken, ProgressiveUploaderOptionsWithUploadToken, VideoUploadResponse } from "@api.video/video-uploader";
 
 export interface Options {
     title?: string;
@@ -45,9 +45,13 @@ export class ApiVideoMediaRecorder {
         this.mediaRecorder.start(options?.timeslice || 5000);
     }
 
+    public getMediaRecorderState(): RecordingState {
+        return this.mediaRecorder.state;
+    }
+
     public stop(): Promise<VideoUploadResponse> {
-        this.mediaRecorder.stop();
         return new Promise((resolve, reject) => {
+            this.mediaRecorder.stop();
             this.onVideoAvailable = (v) => resolve(v)
         })
     }

@@ -1,5 +1,5 @@
 import { ProgressiveUploaderOptionsWithUploadToken, ProgressiveUploaderOptionsWithAccessToken, VideoUploadResponse } from "@api.video/video-uploader";
-export { ProgressiveUploaderOptionsWithAccessToken, ProgressiveUploaderOptionsWithUploadToken } from "@api.video/video-uploader";
+export { ProgressiveUploaderOptionsWithAccessToken, ProgressiveUploaderOptionsWithUploadToken, VideoUploadResponse } from "@api.video/video-uploader";
 export interface Options {
     title?: string;
 }
@@ -12,6 +12,7 @@ export declare class ApiVideoMediaRecorder {
     start(options?: {
         timeslice?: number;
     }): void;
+    getMediaRecorderState(): RecordingState;
     stop(): Promise<VideoUploadResponse>;
     pause(): void;
     private getSupportedMimeTypes;
