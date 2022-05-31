@@ -1,6 +1,6 @@
 {
   "name": "@api.video/media-recorder",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "api.video media recorder - upload video from your webcam with ease",
   "repository": {
     "type": "git",
