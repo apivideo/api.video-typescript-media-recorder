@@ -6,6 +6,14 @@ export interface Options {
     title?: string;
 };
 
+let PACKAGE_VERSION = "";
+try {
+    // @ts-ignore
+    PACKAGE_VERSION = __PACKAGE_VERSION__ || "";
+} catch (e) {
+    // ignore
+}
+
 export class ApiVideoMediaRecorder {
     private mediaRecorder: MediaRecorder;
     private streamUpload: ProgressiveUploader;
@@ -22,7 +30,14 @@ export class ApiVideoMediaRecorder {
 
         this.streamUpload = new ProgressiveUploader({
             preventEmptyParts: true,
-            ...options
+            ...options,
+            origin: {
+                sdk: {
+                    name: "media-recorder",
+                    version: PACKAGE_VERSION
+                },
+                ...options.origin
+            },
         });
 
         this.mediaRecorder.ondataavailable = (e) => this.onDataAvailable(e);
