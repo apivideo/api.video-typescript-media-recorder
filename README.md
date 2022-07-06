@@ -27,6 +27,7 @@
     - [`start(options?: { timeslice?: number })`](#startoptions--timeslice-number-)
       - [Options](#options-1)
     - [`stop(): Promise<VideoUploadResponse>`](#stop-promisevideouploadresponse)
+    - [`addEventListener(event: string, listener: Function)`](#addeventlistenerevent-string-listener-function)
     - [`getMediaRecorderState(): RecordingState`](#getmediarecorderstate-recordingstate)
 - [Full example](#full-example)
 
@@ -178,9 +179,25 @@ The start() method starts the upload of the content retrieved from the MediaStre
 
 The start() method stops the media recording. It upload the last part of content retrieved from the MediaStream (this will start the aggregation of the video parts on the api.video side). It takes no parameter. It returns a Promise that resolves with the newly created video.
 
+### `addEventListener(event: string, listener: Function)`
+
+Define an event listener for the media recorder. The following events are available:
+- `"error"`: when an error occurs
+- `"recordingStopped"`: when the recording is stopped
+
+**Example**
+
+```javascript
+    // ... mediaRecorder instanciation
+
+    mediaRecorder.addEventListener("error", (event) => {
+       console.log(event.data);
+    });
+```
+
 ### `getMediaRecorderState(): RecordingState`
 
-Return the state of the underlaying [MediaRecorder](https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder).
+Return the state of the underlaying [MediaRecorder](https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder). The state can be one of the following: `inactive`, `paused`, `recording`.
 
 **Example**
 

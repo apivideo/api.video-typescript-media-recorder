@@ -1,10 +1,12 @@
 import { ProgressiveUploader, ProgressiveUploaderOptionsWithUploadToken, ProgressiveUploaderOptionsWithAccessToken, VideoUploadResponse } from "@api.video/video-uploader";
+import { VideoUploadError } from "@api.video/video-uploader/dist/src/abstract-uploader";
 
 export { ProgressiveUploaderOptionsWithAccessToken, ProgressiveUploaderOptionsWithUploadToken, VideoUploadResponse } from "@api.video/video-uploader";
+export { VideoUploadError } from "@api.video/video-uploader/dist/src/abstract-uploader";
 
 export interface Options {
-    title?: string;
-};
+    onError?: (error: VideoUploadError) => void;
+}
 
 let PACKAGE_VERSION = "";
 try {
@@ -14,14 +16,20 @@ try {
     // ignore
 }
 
+type EventType = "error" | "recordingStopped";
+
+
 export class ApiVideoMediaRecorder {
     private mediaRecorder: MediaRecorder;
     private streamUpload: ProgressiveUploader;
     private onVideoAvailable?: (video: VideoUploadResponse) => void;
+    private onStopError?: (error: VideoUploadError) => void;
+    private eventTarget: EventTarget;
 
-    constructor(mediaStream: MediaStream, options: ProgressiveUploaderOptionsWithUploadToken | ProgressiveUploaderOptionsWithAccessToken) {
+    constructor(mediaStream: MediaStream, options: Options & (ProgressiveUploaderOptionsWithUploadToken | ProgressiveUploaderOptionsWithAccessToken)) {
+        this.eventTarget = new EventTarget();
         const supportedTypes = this.getSupportedMimeTypes();
-        if(supportedTypes.length === 0) {
+        if (supportedTypes.length === 0) {
             throw new Error("No compatible supported video mime type");
         }
         this.mediaRecorder = new MediaRecorder(mediaStream, {
@@ -41,22 +49,40 @@ export class ApiVideoMediaRecorder {
         });
 
         this.mediaRecorder.ondataavailable = (e) => this.onDataAvailable(e);
+        (window as any).mediaRecorder = this.mediaRecorder;
     }
 
-    private onDataAvailable(ev: BlobEvent) {
+    public addEventListener(type: EventType, callback: EventListenerOrEventListenerObject | null, options?: boolean | AddEventListenerOptions | undefined): void {
+        this.eventTarget.addEventListener(type, callback, options);
+    }
+
+    private async onDataAvailable(ev: BlobEvent) {
         const isLast = (ev as any).currentTarget.state === "inactive";
-        if(isLast) {
-            this.streamUpload.uploadLastPart(ev.data).then((video) => {
-                if(this.onVideoAvailable) {
+        try {
+            if (isLast) {
+                const video = await this.streamUpload.uploadLastPart(ev.data);
+
+                if (this.onVideoAvailable) {
                     this.onVideoAvailable(video);
                 }
-            });
-        } else {
-            this.streamUpload.uploadPart(ev.data);
+            } else {
+                await this.streamUpload.uploadPart(ev.data);
+            }
+        } catch (error) {
+            if (!isLast) this.stopMediaRecorder();
+            this.dispatch("error", error);
+            if (this.onStopError) this.onStopError(error as VideoUploadError);
         }
     }
 
+    private dispatch(type: EventType, data: any): boolean {
+        return this.eventTarget.dispatchEvent(Object.assign(new Event(type), {data}));
+    }
+
     public start(options?: { timeslice?: number }) {
+        if(this.getMediaRecorderState() === "recording") {
+            throw new Error("MediaRecorder is already recording");
+        }
         this.mediaRecorder.start(options?.timeslice || 5000);
     }
 
@@ -66,53 +92,65 @@ export class ApiVideoMediaRecorder {
 
     public stop(): Promise<VideoUploadResponse> {
         return new Promise((resolve, reject) => {
-            this.mediaRecorder.stop();
-            this.onVideoAvailable = (v) => resolve(v)
+            if(this.getMediaRecorderState() === "inactive") {
+                reject(new Error("MediaRecorder is already inactive"));
+            }
+            this.stopMediaRecorder();
+            this.onVideoAvailable = (v) => resolve(v);
+            this.onStopError = (e) => reject(e);
         })
     }
 
     public pause() {
+        if(this.getMediaRecorderState() !== "recording") {
+            throw new Error("MediaRecorder is not recording");
+        }
         this.mediaRecorder.pause();
+    }
+
+    private stopMediaRecorder() {
+        this.mediaRecorder.stop();
+        this.dispatch("recordingStopped", {});
     }
 
     private getSupportedMimeTypes() {
         const VIDEO_TYPES = [
-          "webm",
-          "ogg",
-          "mp4",
-          "x-matroska"
+            "webm",
+            "ogg",
+            "mp4",
+            "x-matroska"
         ];
         const VIDEO_CODECS = [
-          "h264",
-          "h.264",
-          "vp9",
-          "vp9.0",
-          "vp8",
-          "vp8.0",
-          "avc1",
-          "av1",
-          "h265",
-          "h.265",
-          "opus",
+            "h264",
+            "h.264",
+            "vp9",
+            "vp9.0",
+            "vp8",
+            "vp8.0",
+            "avc1",
+            "av1",
+            "h265",
+            "h.265",
+            "opus",
         ];
 
         const supportedTypes: string[] = [];
         VIDEO_TYPES.forEach((videoType) => {
-          const type = `video/${videoType}`;
-          VIDEO_CODECS.forEach((codec) => {
-              const variations = [
-              `${type};codecs=${codec}`,
-              `${type};codecs:${codec}`,
-              `${type};codecs=${codec.toUpperCase()}`,
-              `${type};codecs:${codec.toUpperCase()}`,
-              `${type}`
-            ]
-            variations.forEach(variation => {
-              if(MediaRecorder.isTypeSupported(variation))
-                  supportedTypes.push(variation);
-            })
-          });
+            const type = `video/${videoType}`;
+            VIDEO_CODECS.forEach((codec) => {
+                const variations = [
+                    `${type};codecs=${codec}`,
+                    `${type};codecs:${codec}`,
+                    `${type};codecs=${codec.toUpperCase()}`,
+                    `${type};codecs:${codec.toUpperCase()}`,
+                    `${type}`
+                ]
+                variations.forEach(variation => {
+                    if (MediaRecorder.isTypeSupported(variation))
+                        supportedTypes.push(variation);
+                })
+            });
         });
         return supportedTypes;
-      }
+    }
 }
