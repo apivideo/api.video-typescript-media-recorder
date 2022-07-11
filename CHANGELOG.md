@@ -1,6 +1,11 @@
 # Changelog
 All changes to this project will be documented in this file.
 
+## [1.0.6] - 2022-07-06
+- Update dependancies
+- Add origin headers
+- Handle async errors
+
 ## [1.0.5] - 2022-05-31
 - Add `getMediaRecorderState()` method
 - Fix `stop()` method when the recorder is not started
