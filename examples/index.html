@@ -27,6 +27,7 @@
         <div>
             <button id="start" disabled>start recording</button>
             <button id="stop" disabled>stop recording</button>
+            <input type="text" id="VideoName" />
         </div>
         <div>
             <p>Video link: <span id="video-link"><i>will be displayed when the recording is finished</i></span></p>
@@ -53,8 +54,10 @@
         });
 
         document.getElementById("start").addEventListener("click", () => {
+            const videoName = document.getElementById("VideoName").value
             recorder = new ApiVideoMediaRecorder(stream, {
-                uploadToken: "UPLOAD_TOKEN"
+                uploadToken: "UPLOAD_TOKEN",
+                videoName: videoName
             });
             
             recorder.start();
