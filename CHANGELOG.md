@@ -1,6 +1,9 @@
 # Changelog
 All changes to this project will be documented in this file.
 
+## [1.0.7] - 2022-10-10
+- Allow the user to customize the recorded video's name
+
 ## [1.0.6] - 2022-07-06
 - Update dependancies
 - Add origin headers
