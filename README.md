@@ -185,6 +185,7 @@ The start() method stops the media recording. It upload the last part of content
 Define an event listener for the media recorder. The following events are available:
 - `"error"`: when an error occurs
 - `"recordingStopped"`: when the recording is stopped
+- `"videoPlayable"`: when the video is playable 
 
 **Example**
 
