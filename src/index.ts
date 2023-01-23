@@ -1,4 +1,4 @@
-import { ProgressiveUploader, ProgressiveUploaderOptionsWithUploadToken, ProgressiveUploaderOptionsWithAccessToken, VideoUploadResponse } from "@api.video/video-uploader";
+import { ProgressiveUploader, ProgressiveUploaderOptionsWithAccessToken, ProgressiveUploaderOptionsWithUploadToken, VideoUploadResponse } from "@api.video/video-uploader";
 import { VideoUploadError } from "@api.video/video-uploader/dist/src/abstract-uploader";
 
 export { ProgressiveUploaderOptionsWithAccessToken, ProgressiveUploaderOptionsWithUploadToken, VideoUploadResponse } from "@api.video/video-uploader";
@@ -16,7 +16,7 @@ try {
     // ignore
 }
 
-type EventType = "error" | "recordingStopped";
+type EventType = "error" | "recordingStopped" | "videoPlayable";
 
 
 export class ApiVideoMediaRecorder {
@@ -53,6 +53,9 @@ export class ApiVideoMediaRecorder {
     }
 
     public addEventListener(type: EventType, callback: EventListenerOrEventListenerObject | null, options?: boolean | AddEventListenerOptions | undefined): void {
+        if(type === "videoPlayable") {
+            this.streamUpload.onPlayable((video) => this.dispatch("videoPlayable", video));
+        }
         this.eventTarget.addEventListener(type, callback, options);
     }
 

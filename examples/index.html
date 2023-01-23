@@ -59,6 +59,8 @@
                 uploadToken: "UPLOAD_TOKEN",
                 videoName: videoName
             });
+
+            recorder.addEventListener("videoPlayable", (e) => console.log("Video playable,", e));
             
             recorder.start();
             
