@@ -1,6 +1,9 @@
 # Changelog
 All changes to this project will be documented in this file.
 
+## [1.0.9] - 2023-02-07
+- Add `mimeType` and `generateFileOnStop` options
+
 ## [1.0.8] - 2023-01-23
 - Add "videoPlayable" event
 

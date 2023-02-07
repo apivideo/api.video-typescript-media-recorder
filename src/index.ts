@@ -6,6 +6,8 @@ export { VideoUploadError } from "@api.video/video-uploader/dist/src/abstract-up
 
 export interface Options {
     onError?: (error: VideoUploadError) => void;
+    generateFileOnStop?: boolean;
+    mimeType?: string;
 }
 
 let PACKAGE_VERSION = "";
@@ -25,15 +27,31 @@ export class ApiVideoMediaRecorder {
     private onVideoAvailable?: (video: VideoUploadResponse) => void;
     private onStopError?: (error: VideoUploadError) => void;
     private eventTarget: EventTarget;
+    private debugChunks: Blob[] = [];
+    private generateFileOnStop: boolean;
+    private mimeType: string;
 
     constructor(mediaStream: MediaStream, options: Options & (ProgressiveUploaderOptionsWithUploadToken | ProgressiveUploaderOptionsWithAccessToken)) {
         this.eventTarget = new EventTarget();
-        const supportedTypes = this.getSupportedMimeTypes();
-        if (supportedTypes.length === 0) {
-            throw new Error("No compatible supported video mime type");
+        this.generateFileOnStop = options.generateFileOnStop || false;
+
+        const findBestMimeType = () => {
+            const supportedTypes = this.getSupportedMimeTypes();
+            if (supportedTypes.length === 0) {
+                throw new Error("No compatible supported video mime type");
+            }
+            return supportedTypes[0];
         }
+
+        this.mimeType = options.mimeType || findBestMimeType();
+
         this.mediaRecorder = new MediaRecorder(mediaStream, {
-            mimeType: supportedTypes[0],
+            mimeType: this.mimeType,
+        });
+
+        this.mediaRecorder.addEventListener("stop", () => {
+            const stopEventPayload = this.generateFileOnStop ? { file: new Blob(this.debugChunks, { type: this.mimeType }) } : {};
+            this.dispatch("recordingStopped", stopEventPayload);
         });
 
         this.streamUpload = new ProgressiveUploader({
@@ -53,7 +71,7 @@ export class ApiVideoMediaRecorder {
     }
 
     public addEventListener(type: EventType, callback: EventListenerOrEventListenerObject | null, options?: boolean | AddEventListenerOptions | undefined): void {
-        if(type === "videoPlayable") {
+        if (type === "videoPlayable") {
             this.streamUpload.onPlayable((video) => this.dispatch("videoPlayable", video));
         }
         this.eventTarget.addEventListener(type, callback, options);
@@ -62,6 +80,9 @@ export class ApiVideoMediaRecorder {
     private async onDataAvailable(ev: BlobEvent) {
         const isLast = (ev as any).currentTarget.state === "inactive";
         try {
+            if (this.generateFileOnStop) {
+                this.debugChunks.push(ev.data);
+            }
             if (isLast) {
                 const video = await this.streamUpload.uploadLastPart(ev.data);
 
@@ -72,18 +93,18 @@ export class ApiVideoMediaRecorder {
                 await this.streamUpload.uploadPart(ev.data);
             }
         } catch (error) {
-            if (!isLast) this.stopMediaRecorder();
+            if (!isLast) this.mediaRecorder.stop();
             this.dispatch("error", error);
             if (this.onStopError) this.onStopError(error as VideoUploadError);
         }
     }
 
     private dispatch(type: EventType, data: any): boolean {
-        return this.eventTarget.dispatchEvent(Object.assign(new Event(type), {data}));
+        return this.eventTarget.dispatchEvent(Object.assign(new Event(type), { data }));
     }
 
     public start(options?: { timeslice?: number }) {
-        if(this.getMediaRecorderState() === "recording") {
+        if (this.getMediaRecorderState() === "recording") {
             throw new Error("MediaRecorder is already recording");
         }
         this.mediaRecorder.start(options?.timeslice || 5000);
@@ -95,46 +116,42 @@ export class ApiVideoMediaRecorder {
 
     public stop(): Promise<VideoUploadResponse> {
         return new Promise((resolve, reject) => {
-            if(this.getMediaRecorderState() === "inactive") {
+            if (this.getMediaRecorderState() === "inactive") {
                 reject(new Error("MediaRecorder is already inactive"));
             }
-            this.stopMediaRecorder();
+            this.mediaRecorder.stop();
             this.onVideoAvailable = (v) => resolve(v);
             this.onStopError = (e) => reject(e);
         })
     }
 
     public pause() {
-        if(this.getMediaRecorderState() !== "recording") {
+        if (this.getMediaRecorderState() !== "recording") {
             throw new Error("MediaRecorder is not recording");
         }
         this.mediaRecorder.pause();
     }
 
-    private stopMediaRecorder() {
-        this.mediaRecorder.stop();
-        this.dispatch("recordingStopped", {});
-    }
-
-    private getSupportedMimeTypes() {
+    public getSupportedMimeTypes() {
         const VIDEO_TYPES = [
+            "mp4",
             "webm",
             "ogg",
-            "mp4",
             "x-matroska"
         ];
         const VIDEO_CODECS = [
-            "h264",
-            "h.264",
+            "vp9,opus",
+            "vp8,opus",
             "vp9",
             "vp9.0",
             "vp8",
             "vp8.0",
+            "h264",
+            "h.264",
             "avc1",
             "av1",
             "h265",
             "h.265",
-            "opus",
         ];
 
         const supportedTypes: string[] = [];
@@ -148,10 +165,12 @@ export class ApiVideoMediaRecorder {
                     `${type};codecs:${codec.toUpperCase()}`,
                     `${type}`
                 ]
-                variations.forEach(variation => {
-                    if (MediaRecorder.isTypeSupported(variation))
+                for (const variation of variations) {
+                    if (MediaRecorder.isTypeSupported(variation)) {
                         supportedTypes.push(variation);
-                })
+                        break;
+                    }
+                }
             });
         });
         return supportedTypes;
