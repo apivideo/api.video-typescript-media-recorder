@@ -36,7 +36,7 @@ export class ApiVideoMediaRecorder {
         this.generateFileOnStop = options.generateFileOnStop || false;
 
         const findBestMimeType = () => {
-            const supportedTypes = this.getSupportedMimeTypes();
+            const supportedTypes = ApiVideoMediaRecorder.getSupportedMimeTypes();
             if (supportedTypes.length === 0) {
                 throw new Error("No compatible supported video mime type");
             }
@@ -132,7 +132,7 @@ export class ApiVideoMediaRecorder {
         this.mediaRecorder.pause();
     }
 
-    public getSupportedMimeTypes() {
+    public static getSupportedMimeTypes() {
         const VIDEO_TYPES = [
             "mp4",
             "webm",
