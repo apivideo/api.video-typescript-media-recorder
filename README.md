@@ -1,3 +1,4 @@
+<!--<documentation_excluded>-->
 [![badge](https://img.shields.io/twitter/follow/api_video?style=social)](https://twitter.com/intent/follow?screen_name=api_video) &nbsp; [![badge](https://img.shields.io/github/stars/apivideo/api.video-typescript-media-recorder?style=social)](https://github.com/apivideo/api.video-typescript-media-recorder) &nbsp; [![badge](https://img.shields.io/discourse/topics?server=https%3A%2F%2Fcommunity.api.video)](https://community.api.video)
 ![](https://github.com/apivideo/.github/blob/main/assets/apivideo_banner.png)
 <h1 align="center">api.video media recorder</h1>
@@ -8,7 +9,7 @@
 [api.video](https://api.video) is the video infrastructure for product builders. Lightning fast video APIs for integrating, scaling, and managing on-demand & low latency live streaming features in your app.
 
 
-# Table of contents
+## Table of contents
 - [Table of contents](#table-of-contents)
 - [Project description](#project-description)
 - [Getting started](#getting-started)
@@ -17,7 +18,7 @@
     - [Installation method #2: typescript](#installation-method-2-typescript)
     - [Simple include in a javascript project](#simple-include-in-a-javascript-project)
 - [Documentation](#documentation)
-  - [Instanciation](#instanciation)
+  - [Instantiation](#instantiation)
     - [Options](#options)
       - [Using a delegated upload token (recommended):](#using-a-delegated-upload-token-recommended)
       - [Using an access token (discouraged):](#using-an-access-token-discouraged)
@@ -31,17 +32,30 @@
     - [`getMediaRecorderState(): RecordingState`](#getmediarecorderstate-recordingstate)
 - [Full example](#full-example)
 
-# Project description
+<!--</documentation_excluded>-->
+<!--<documentation_only>
+---
+title: api.video TypeScript Media Recorder
+meta: 
+  description: The official api.video TypeScript Media Recorder for api.video. [api.video](https://api.video/) is the video infrastructure for product builders. Lightning fast video APIs for integrating, scaling, and managing on-demand & low latency live streaming features in your app.
+---
+
+# api.video TypeScript Media Recorder
+
+[api.video](https://api.video/) is the video infrastructure for product builders. Lightning fast video APIs for integrating, scaling, and managing on-demand & low latency live streaming features in your app.
+
+</documentation_only>-->
+## Project description
 
 
 Typescript library to easily upload data from a [MediaStream](https://developer.mozilla.org/fr/docs/Web/API/MediaStream) to api.video.
 It can be used to upload a video to api.video from the user's webcam with ease, as well as from a screen recording.
 
-# Getting started
+## Getting started
 
-## Installation
+### Installation
 
-### Installation method #1: requirejs
+#### Installation method #1: requirejs
 
 If you use requirejs you can add the library as a dependency to your project with 
 
@@ -60,7 +74,7 @@ var recorder = new ApiVideoMediaRecorder(mediaStream, {
 }); 
 ```
 
-### Installation method #2: typescript
+#### Installation method #2: typescript
 
 If you use Typescript you can add the library as a dependency to your project with 
 
@@ -80,7 +94,7 @@ const recorder = new ApiVideoMediaRecorder(mediaStream, {file: files[0],
 ```
 
 
-### Simple include in a javascript project
+#### Simple include in a javascript project
 
 Include the library in your HTML file like so:
 
@@ -104,17 +118,17 @@ Then, once the `window.onload` event has been trigered, create your player using
 </script>
 ```
 
-# Documentation
+## Documentation
 
-## Instanciation
+### Instantiation
 
-### Options 
+#### Options 
 
-The media recorder object is instanciated using a [MediaStream](https://developer.mozilla.org/fr/docs/Web/API/MediaStream) and an `options` object. Options to provide depend on the way you want to authenticate to the API: either using a delegated upload token (recommanded), or using a usual access token. 
+The media recorder object is instantiated using a [MediaStream](https://developer.mozilla.org/fr/docs/Web/API/MediaStream) and an `options` object. Options to provide depend on the way you want to authenticate to the API: either using a delegated upload token (recommanded), or using a usual access token. 
 
-#### Using a delegated upload token (recommended):
+##### Using a delegated upload token (recommended):
 
-Using delegated upload tokens for authentication is best options when uploading from the client side. To know more about delegated upload token, read the dedicated article on api.video's blog: [Delegated Uploads](https://api.video/blog/tutorials/delegated-uploads).
+Using delegated upload tokens for authentication is best options when uploading from the client side. To know more about delegated upload token, read the dedicated article on api.video's blog: [Delegated Uploads](https://api.video/blog/tutorials/delegated-uploads/).
 
 
 |                   Option name | Mandatory | Type   | Description             |
@@ -123,7 +137,7 @@ Using delegated upload tokens for authentication is best options when uploading 
 |                       videoId | no        | string | id of an existing video |
 | _common options (see bellow)_ |           |        |                         |
 
-#### Using an access token (discouraged):
+##### Using an access token (discouraged):
 
 **Warning**: be aware that exposing your access token client-side can lead to huge security issues. Use this method only if you know what you're doing :).
 
@@ -135,7 +149,7 @@ Using delegated upload tokens for authentication is best options when uploading 
 | _common options (see bellow)_ |           |        |                         |
 
 
-#### Common options
+##### Common options
 
 
 | Option name | Mandatory | Type   | Description                                                         |
@@ -145,7 +159,7 @@ Using delegated upload tokens for authentication is best options when uploading 
 |   videoName | no        | string | the name of your recorded video (overrides the default "file" name) |
 
 
-### Example
+#### Example
 
 ```javascript
     const mediaRecorder = new ApiVideoMediaRecorder(myMediaStream, {
@@ -154,13 +168,13 @@ Using delegated upload tokens for authentication is best options when uploading 
     });
 ```
 
-## Methods
+### Methods
 
-### `start(options?: { timeslice?: number })`
+#### `start(options?: { timeslice?: number })`
 
 The start() method starts the upload of the content retrieved from the MediaStream. It takes an optionnal `options` parameter.
 
-#### Options
+##### Options
 | Option name | Mandatory          | Type   | Description                                          |
 | ----------: | ------------------ | ------ | ---------------------------------------------------- |
 |   timeslice | no (default: 5000) | number | The number of milliseconds to record into each Blob. |
@@ -169,18 +183,18 @@ The start() method starts the upload of the content retrieved from the MediaStre
 **Example**
 
 ```javascript
-    // ... mediaRecorder instanciation
+    // ... mediaRecorder instantiation
 
     mediaRecorder.start();
     // or, with a 2 seconds timeslice:
     // mediaRecorder.start({ timeslice: 2000 });
 ```
 
-### `stop(): Promise<VideoUploadResponse>`
+#### `stop(): Promise<VideoUploadResponse>`
 
 The start() method stops the media recording. It upload the last part of content retrieved from the MediaStream (this will start the aggregation of the video parts on the api.video side). It takes no parameter. It returns a Promise that resolves with the newly created video.
 
-### `addEventListener(event: string, listener: Function)`
+#### `addEventListener(event: string, listener: Function)`
 
 Define an event listener for the media recorder. The following events are available:
 - `"error"`: when an error occurs
@@ -190,27 +204,27 @@ Define an event listener for the media recorder. The following events are availa
 **Example**
 
 ```javascript
-    // ... mediaRecorder instanciation
+    // ... mediaRecorder instantiation
 
     mediaRecorder.addEventListener("error", (event) => {
        console.log(event.data);
     });
 ```
 
-### `getMediaRecorderState(): RecordingState`
+#### `getMediaRecorderState(): RecordingState`
 
 Return the state of the underlaying [MediaRecorder](https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder). The state can be one of the following: `inactive`, `paused`, `recording`.
 
 **Example**
 
 ```javascript
-    // ... mediaRecorder instanciation
+    // ... mediaRecorder instantiation
 
     mediaRecorder.stop()
         .then(video => console.log(video));
 ```
 
-# Full example
+## Full example
 
 
 ```html
