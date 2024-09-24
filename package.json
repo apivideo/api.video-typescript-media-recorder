@@ -1,6 +1,6 @@
 {
   "name": "@api.video/media-recorder",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "api.video media recorder - upload video from your webcam with ease",
   "repository": {
     "type": "git",
@@ -39,7 +39,7 @@
     "xhr-mock": "^2.5.1"
   },
   "dependencies": {
-    "@api.video/video-uploader": "^1.1.3",
+    "@api.video/video-uploader": "^1.1.6",
     "core-js": "^3.23.3"
   }
 }
